@@ -1,5 +1,11 @@
-#coding: utf-8
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+"""
+BERTベースの分類器の訓練
+"""
 from django.core.management.base import BaseCommand
+import os
+import time
 
 import configparser
 from transformers import BertJapaneseTokenizer, BertForSequenceClassification
@@ -13,21 +19,32 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-import time
 from logzero import logger
 import numpy as np
 from sklearn.metrics import f1_score
 from sklearn.preprocessing import LabelEncoder
 from pathlib import Path
 from tqdm import tqdm
-import os
 import random
 import pandas as pd
 from sklearn.metrics import classification_report, confusion_matrix
 
 from ...bert import EarlyStopping, DataFrameDataset, SeriesExample, DocumentClassifier
 
+
 def make_df(lines, tokenizer, max_length, categories_idx):
+    """
+    ファイルから読み込んだデータからDataFrameを作成
+
+    Args:
+        *lines(list): 入力データ
+        *tokenizer: 利用する単語分割ツール
+        *max_length(int): BERTの最大シーケンス長
+        *categories_idx(dict): カテゴリとそのインデックスを変換するための辞書
+
+    Returns:
+        *df: DataFrame
+    """
     anss, contents = [], []
     for line in lines:
         tmp = line.split('\t')

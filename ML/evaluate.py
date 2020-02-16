@@ -1,3 +1,8 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+"""
+モデル性能を評価
+"""
 from django.db import models
 
 from janome.tokenizer import Tokenizer
@@ -16,7 +21,11 @@ from bayes import NaiveBayesClassifier
 from randomforest import extract_tokens
 from bert import DocumentClassifier
 
+
 def evaluate_bayes():
+    """
+    ナイーブベイズを使った教師あり分類器の評価関数
+    """
     config_file = '/code/ML/config.ini'
     config_ini = configparser.ConfigParser()
     config_ini.read(config_file, encoding='utf-8')
@@ -58,6 +67,9 @@ def evaluate_bayes():
 
 
 def evaluate_randomforest():
+    """
+    RandomForest分類器の評価
+    """
     config_file = '/code/ML/config.ini'
     config_ini = configparser.ConfigParser()
     config_ini.read(config_file, encoding='utf-8')
@@ -96,6 +108,9 @@ def evaluate_randomforest():
 
 
 def evaluate_bert():
+    """
+    BERTベースの分類器の評価
+    """
     config_file = '/code/ML/config.ini'
     config_ini = configparser.ConfigParser()
     config_ini.read(config_file, encoding='utf-8')
@@ -131,6 +146,6 @@ def evaluate_bert():
     
 
 if __name__=='__main__':
-    #evaluate_bayes()
-    #evaluate_randomforest()
+    evaluate_bayes()
+    evaluate_randomforest()
     evaluate_bert()

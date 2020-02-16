@@ -1,3 +1,8 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+"""
+URLの紐付け
+"""
 from django.conf.urls import url 
 from . import views
 

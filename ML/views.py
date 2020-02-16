@@ -1,10 +1,19 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+"""
+HTMLファイルにデータを渡し、ブラウザ上に表示
+"""
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 
 from .forms import InputForm
 from .models import show
 
+
 def index_template(request):
+    """
+    HTMLファイルにデータを渡し、ブラウザ上に表示
+    """
     if request.method == 'POST':
         form = InputForm(request.POST)
         url = request.POST['url']

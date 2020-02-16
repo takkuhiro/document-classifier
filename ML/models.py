@@ -1,3 +1,8 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+"""
+内部処理
+"""
 from django.db import models
 
 import requests
@@ -10,7 +15,19 @@ from .bayes import naive_bayes_classifier_predict
 from .randomforest import random_forest_predict
 from .bert import bert_predict
 
+
 def show(url):
+    """
+    対象の記事の分類結果を返す関数
+
+    Args:
+        *url: 対象とする記事のURL
+
+    Returns:
+        *nb_category(str): ナイーブベイズ分類器出力結果
+        *rf_category(str): RandomForest出力結果
+        *be_category(str): BERT出力結果
+    """
     t = Tokenizer()
     category_num = 8
     probs = [0 for _ in range(category_num)]

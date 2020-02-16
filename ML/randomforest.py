@@ -1,3 +1,8 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+"""
+RandomForestをベースとした分類器
+"""
 from django.db import models
 
 from janome.tokenizer import Tokenizer
@@ -9,7 +14,16 @@ import configparser
 
 
 def extract_tokens(text, already_tokenize=True):
-    #形態素解析をしてトークンのリストを返す
+    """
+    形態素解析をしてトークンのリストを返す
+    
+    Args:
+        *text(str): 入力文
+        *already_tokenize(bool): すでに単語分割されているか
+
+    Returns:
+        *_(list): 単語分割後の単語リスト
+    """
     tokens = []
     if already_tokenize:
         return [token for token in text.split(' ')]
@@ -19,6 +33,16 @@ def extract_tokens(text, already_tokenize=True):
 
 
 def random_forest_predict(text, already_tokenize=True):
+    """
+    RandomForestによる分類結果
+
+    Args:
+        *text(str): 入力文
+        *already_tokenize(bool): すでに単語分割されているか
+
+    Returns:
+        *label_predict(str): 分類結果のカテゴリ
+    """
     config_file = 'ML/config.ini'
     config_ini = configparser.ConfigParser()
     config_ini.read(config_file, encoding='utf-8')

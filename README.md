@@ -2,6 +2,7 @@
 
 ```
 cd document-classifier  
+docker-compose build  
 docker-compose up -d  
 docker exec -it doc_web_1 bash  
 
@@ -14,11 +15,17 @@ python manage.py train_bayes
 # モデル訓練：Random Forest  
 python manage.py train_randomforest  
 
-# モデル訓練：BERT  
+# モデル訓練：BERT(所要時間：1~2時間程度)  
 python manage.py train_bert  
 ```
 
 [URL](http://127.0.0.1:8000/)にアクセスする。
+
+# その他
+```
+# それぞれのモデルの評価
+python /code/ML/evaluate.py
+```
 
 # 精度  
 | モデル | マクロ平均Precision | マクロ平均Recall | マクロ平均F1 | 重み付き平均Precision | 重み付き平均Recall | 重み付き平均F1 |  
@@ -27,8 +34,9 @@ python manage.py train_bert
 | ナイーブベイズ(全単語) | 0.88 | 0.86 | 0.86 | 0.90 | 0.90 | 0.90 |  
 | Random Forest(名詞のみ) | 0.86 | 0.83 | 0.84 | 0.88 | 0.88 | 0.88 |  
 | Random Forest(全単語) | 0.86 | 0.83 | 0.84 | 0.89 | 0.89 | 0.88 |  
-| BERT | 0.84 | 0.84 | 0.84 | 0.88 | 0.88 | 0.88 |  
+| BERT | 0.84 | 0.84 | 0.84 | 0.88 | 0.88 | 0.88 |   
 
+※ナイーブベイズとRandomForestにおいては、パラメタ探索を行わないため、検証データも訓練データの一部として利用している。
 
 # 工夫点  
 - ナイーブベイズとRandom Forestは、名詞のみの場合と全単語の場合を試して比較した。(BERTは文脈を考慮しているので名詞のみでの実行はしていない。)

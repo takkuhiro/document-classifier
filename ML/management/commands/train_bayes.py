@@ -1,4 +1,8 @@
-#coding: utf-8
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+"""
+ナイーブベイズ分類器の訓練
+"""
 from django.core.management.base import BaseCommand
 
 import pickle

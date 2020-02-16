@@ -1,3 +1,8 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+"""
+BERTベースの分類器
+"""
 import os
 import time
 
@@ -118,7 +123,21 @@ class SeriesExample(Example):
 
 
 class DocumentClassifier:
+    """
+    BERTをベースとした分類器
+    """
+
     def __init__(self, net_dir=None, max_length=512, batch_size=32, num_labels=2, num_epochs=100, random_seed=None):
+        """
+        Args:
+            *net_dir(str): 読み込む事前学習モデルが存在するディレクトリ
+            *max_length(int): BERT最大長
+            *batch_size(int): 訓練時バッチサイズ 
+            *num_labels(int): 分類クラス数
+            *num_epochs(int): 学習時の最大エポック数
+            *random_seed(int):初期パラメータを固定しておくためのseed
+        """
+
         self.max_length = max_length
         self.batch_size = batch_size
         self.num_labels = num_labels
@@ -146,6 +165,12 @@ class DocumentClassifier:
         self.LABEL = torchtext.data.Field(sequential=False, use_vocab=False)
     
     def seed_everything(self, seed):
+        """
+        seedの設定
+
+        Args:
+            *seed(int): seed値
+        """
         random.seed(seed)
         os.environ['PYTHONHASHSEED'] = str(seed)
         np.random.seed(seed)
@@ -156,6 +181,15 @@ class DocumentClassifier:
         logger.info('Set random seeds')
 
     def tokenizer_with_preprocessing(self, text):
+        """
+        単語分割時の前処理
+
+        Args:
+            *text(str): 入力文
+
+        Returns:
+            *ret(list): 単語分割後の単語のリスト
+        """
         # 半角、全角の変換
         text = mojimoji.han_to_zen(text)
         # 改行、半角スペース、全角スペースを削除
@@ -169,13 +203,39 @@ class DocumentClassifier:
         return ret
 
     def _build_vocab(self, ds, min_freq=1):
+        """
+        vocaburaryのビルド
+
+        Args:
+            *ds(DataFrameDataSetオブジェクト): データセット
+            *min_freq(int): vocaburaryに追加する単語の最小出現数
+        """
         self.TEXT.build_vocab(ds, min_freq=min_freq)
         self.TEXT.vocab.stoi = self.tokenizer.vocab
         
     def load(self, save_dir):
+        """
+        モデルのロード
+
+        Args:
+            *save_dir(str):モデルが保存してあるディレクトリ
+        """
         self.net.from_pretrained(save_dir, num_labels=8)
 
     def fit(self, train_df, val_df, save_dir, early_stopping_rounds=10, fine_tuning_type='fast'):
+        """
+        モデルの訓練
+
+        Args:
+            *train_df(DataFrame): 訓練データ
+            *val_df(DataFrame): 検証データ
+            *save_dir(str): モデルが保存してあるディレクトリ
+            *early_stopping_rounds(int): EarlyStoppingを行うエポック数
+            *fine_tuning_type(str): fine-tuningの種類(fast, full)。
+                                    fastの場合、モデルの一部のみを学習させる。（下記で調整可能）
+                                    fullの場合、モデル全体を学習させる。
+        """
+
         logger.info('[Start]Create DataSets from DataFrames')
         train_ds = DataFrameDataset(train_df, fields={'Text': self.TEXT, 'Label': self.LABEL})
         val_ds = DataFrameDataset(val_df, fields={'Text': self.TEXT, 'Label': self.LABEL})
@@ -230,7 +290,20 @@ class DocumentClassifier:
 
     @staticmethod
     def _train_model(net, dataloaders_dict, criterion, optimizer, num_epochs, patience):
+        """
+        訓練時利用する関数
 
+        Args:
+            *net:BertForSequenceClassificationオブジェクト
+            *dataloaders_dict: データローダー
+            *criterion: 損失関数
+            *optimizer: 最適化関数
+            *num_epochs: 訓練時エポック数
+            patience: EarlyStoppingを行うエポック数
+
+        Returns:
+            *net: 学習後のオブジェクト
+        """
         # GPUが使えるかを確認
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         logger.info(f"使用デバイス：{device}")
@@ -337,6 +410,15 @@ class DocumentClassifier:
         return net
     
     def predict(self, test_df):
+        """
+        モデルによる推論
+
+        Args:
+            *test_df: テスト用の推論
+
+        Returns:
+            *_(list): ラベル数分のスコアのリスト
+        """
         logger.info('[Start]Create DataSet, DataLoader from DataFrame')
         test_ds = DataFrameDataset(test_df, fields={'Text': self.TEXT})
         if not hasattr(self.TEXT, 'vocab'):
@@ -360,7 +442,15 @@ class DocumentClassifier:
         return np.concatenate(logits, axis=0)
 
 def bert_predict(text):
-    #config_file = 'ML/config.ini'
+    """
+    BERTベースの分類器による推論。Webアプリ用の関数
+
+    Args:
+        *text(str): 入力文
+
+    Returns:
+        *con(str): 分類結果のカテゴリ
+    """
     config_file = '/code/ML/config.ini'
     config_ini = configparser.ConfigParser()
     config_ini.read(config_file, encoding='utf-8')
@@ -376,6 +466,6 @@ def bert_predict(text):
     for i, con in enumerate(categories):
         if i == idx:
             return con
-    return 0
+    return ''
 
 

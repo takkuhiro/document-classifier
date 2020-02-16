@@ -1,4 +1,8 @@
-#coding: utf-8:
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+"""
+データ収集
+"""
 from django.core.management.base import BaseCommand
 import os
 import sys
@@ -18,7 +22,6 @@ def cleaning(text):
     cleaned_text = cleaned_text.replace('\u3000', ' ')
     cleaned_text = cleaned_text.replace('\n', '')
     cleaned_text = cleaned_text.replace('\'', '')
-    cleaned_text = cleaned_text.replace('\' \'\n', '')
 
     return cleaned_text
 
@@ -42,8 +45,7 @@ class Command(BaseCommand):
     idx = 0
     exec_flg = True
     
-    ###############################
-    #収集対象のリンク先をまとめる
+    #1. 収集対象のリンク先をまとめる
     link_cnt = 0
     res = requests.get(target)
     bs4obj = bs4.BeautifulSoup(res.text)
@@ -95,8 +97,7 @@ class Command(BaseCommand):
     with open(article_file, 'w', encoding='utf-8') as f:
         f.write('\n'.join(contents))
 
-    ###############################
-    #整形
+    #2. 整形
     t = Tokenizer()
 
     formatted_lines = []
@@ -112,8 +113,7 @@ class Command(BaseCommand):
     with open(format_file, 'w', encoding='utf-8') as f:
         f.write('\n'.join(formatted_lines))
 
-    ###############################
-    #trainとtestにsplit
+    #3. train, valid, testにsplit
     random.shuffle(formatted_lines)
     train, valid, test = np.split(formatted_lines, [int(.6 * len(formatted_lines)), int(.8 * len(formatted_lines))])
     
