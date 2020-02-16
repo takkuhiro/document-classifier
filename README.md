@@ -31,22 +31,22 @@ python manage.py train_bert
 
 # 工夫点  
 - ナイーブベイズとRandom Forestは、名詞のみの場合と全単語の場合を試して比較した。(BERTは文脈を考慮しているので名詞のみでの実行はしていない。)
-- BERTは、訓練時に検証データを用いてLossが一定以上低下しなくなった状態が3epoch続いた場合は訓練を中止した。（EarlyStopping）最終的には7epoch時のパラメタを利用する。
+- BERTは、訓練時に検証データを用いてLossが一定以上低下しなくなった状態が3epoch続いた場合は訓練を中止した。（EarlyStopping）これにより、最終的に7epoch時のパラメタを利用した。
 
 # 補足
 - BERT設定はmax_lengthが128、訓練時バッチサイズが4、それ以外はDevlinらのBERT-BASEに従う。
 - BERT記事参照: https://github.com/nekoumei/DocumentClassificationUsingBERT-Japanese  
-- BERT事前学習モデル：東北大学　乾・鈴木研究室が公開している事前学習モデルを利用(BERT-base_mecab-ipadic-bpe-32k_whole-word-mask)(https://github.com/cl-tohoku/bert-japanese)
-- BERTベースの分類器の訓練では、訓練データ・検証データ・テストデータを利用する。上記分類器の訓練データをもとに、BERT用の訓練データと検証データを作成する。テストデータは他分類器の場合と同じである。
-- ナイーブベイズ分類器とRandom Forestでは、今回はパラメタ探索を行わないため、検証データも訓練データに加える。
-- データは収集時期をずらすことで多く集めることができる。（今回は収集を行ったのは1回のみ。時間があれば訓練データ8万件程度は集めたい。）
-- 形態素解析ツールとして、ナイーブベイズ分類器とRandomForestではJanomeを、BERTではMecabを利用している。(from transformer import BertJapaneseTokenizerによる「MeCab+WordPiece, whole word masking」を利用している。)
+- BERT事前学習モデル：東北大学　乾・鈴木研究室が公開している事前学習モデルを利用([BERT-base_mecab-ipadic-bpe-32k_whole-word-mask](https://github.com/cl-tohoku/bert-japanese))
+- データの収集時期をずらすことで、追加のデータ集めることができる。上記スコアは、収集を1回のみ行って実験したものである。
+- 利用した形態素解析ツール  
+    - ナイーブベイズ分類器, RandomForest：Janome
+    - BERT：Mecab(ライブラリtransformer中のBertJapaneseTokenizer(MeCab+WordPiece, whole word masking))
 
-# 今後の改善点
+# 今後の改善点  
 - 追加の学習データ収集（可能であれば訓練データ10万件程度まで収集したい。）
-- Mecab Neologd辞書を使う。（記事中に固有名詞等が多いため。）
+- [mecab-ipadic-NEologd辞書](https://github.com/neologd/mecab-ipadic-neologd)の利用（記事中に固有名詞等が多いため。）
 - BERTにおける改善
-    - DevlinらのBERT-BASE, BERT-LARGEのモデル設定の利用
+    - DevlinらのBERT-BASE, BERT-LARGEのモデル設定での利用
     - パラメタ探索(正例と負例の更新重み・学習率・エポック)
     - タイトルと本文でSegment Embeddingを変更する。
-    - max_lengthを超えた時のtruncated手法は文書先頭より文書後方を残すようにした方が良さそう。（参照："How to Fine-Tuning BERT for Text Classification" China National Conference on Chinese Computational Linguistics[Chi Sun et al., 2019]）
+    - max_lengthを超えた時のtruncated手法として文書中間を削除し、文書先頭より文書後方を重点的に残す。例えば、先頭128単語と後方384単語など。（参照："How to Fine-Tuning BERT for Text Classification" China National Conference on Chinese Computational Linguistics[Chi Sun et al., 2019](http://cips-cl.org/static/anthology/CCL-2019/CCL-19-141.pdf)）
