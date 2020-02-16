@@ -3,29 +3,21 @@
 ```
 docker-compose up -d  
 docker exec -it doc_web_1 bash  
-```  
 
-# データ収集・整形・データ分割（訓練データとテストデータ）  
-python manage.py data_collection
-# モデル訓練：ナイーブベイズ分類器
-python manage.py train_bayes
-# モデル訓練：Random Forest
-python manage.py train_randomforest
-# モデル訓練：BERT
+# データ収集・整形・データ分割  
+python manage.py data_collection  
+
+# モデル訓練：ナイーブベイズ分類器  
+python manage.py train_bayes  
+
+# モデル訓練：Random Forest  
+python manage.py train_randomforest  
+
+# モデル訓練：BERT  
 python manage.py train_bert  
+```
 
 [URL](http://127.0.0.1:8000/)にアクセスする。
-
-
-- データ収集・整形・データ分割（訓練データとテストデータ）  
-  ```python manage.py data_collection```  
-- モデル訓練  
-  - ナイーブベイズ:   
-    ```cd /code  
-    python manage.py train_bayes  ```  
-  - Random Forest:  
-    ```cd /code  
-    python manage.py train_randomforest```  
 
 # 精度  
 | モデル | マクロ平均Precision | マクロ平均Recall | マクロ平均F1 | 重み付き平均Precision | 重み付き平均Recall | 重み付き平均F1 |  
