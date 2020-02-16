@@ -14,11 +14,9 @@ from janome.tokenizer import Tokenizer
 def naive_bayes_classifier_predict(text, already_tokenize=True):
     """
     ナイーブベイズを使った教師あり文書分類器を用いて推論を行う関数
-    
     Args:
         *text(str): 入力文
         *already_tokenize (bool): すでに空白を挟んで単語分割されているか
-    
     Returns:
         *category(str): 分類結果
     """
@@ -50,7 +48,6 @@ class NaiveBayesClassifier:
     def train(self, text):
         """
         分類器の学習
-        
         Args:
             *text(str): 入力文
         """
@@ -60,16 +57,17 @@ class NaiveBayesClassifier:
         content_words = content.split(' ')
         for word in content_words:
             self.__word_count_up(word, category)
-        #content = content.replace(' ', '')
-        #for token in t.tokenize(content):
-        #    if token.part_of_speech.split(',')[0]=='名詞':
-        #        self.__word_count_up(token.surface, category)
+        """入力を名詞のみにする場合
+        content = content.replace(' ', '')
+        for token in t.tokenize(content):
+            if token.part_of_speech.split(',')[0]=='名詞':
+                self.__word_count_up(token.surface, category)
+        """
         self.__category_count_up(category)
     
     def __word_count_up(self, word, category):
         """
         カテゴリごとの単語出現数を数え上げる
-
         Args:
             *word(str): 入力文中の単語
             *category(str): 入力文のカテゴリラベル
@@ -81,7 +79,6 @@ class NaiveBayesClassifier:
     def __category_count_up(self, category):
         """
         カテゴリ数を数え上げる
-
         Args:
             *category: カテゴリラベル
         """
@@ -90,14 +87,11 @@ class NaiveBayesClassifier:
     def classifier(self, text, already_tokenize=True):
         """
         分類器による推論
-
         Args:
             *text(str): 入力文
             *already_tokenize(bool): すでに単語分割されているか
-        
         Returns:
-            *
-
+            *best_category(str): 分類結果のカテゴリ
         """
         best_category = None
         max_prob = -float('inf')
@@ -108,10 +102,10 @@ class NaiveBayesClassifier:
         else:
             t = Tokenizer()
             for token in t.tokenize(text):
-                ###
-                #if token.part_of_speech.split(',')[0]=='名詞':
-                #    tokenized_tokens.append(token.surface)
-                ###
+                """入力を名詞のみにする場合
+                if token.part_of_speech.split(',')[0]=='名詞':
+                    tokenized_tokens.append(token.surface)
+                """
                 tokenized_tokens.append(token.surface)
 
         #P(Category|Document)が最大のカテゴリを選択
@@ -129,11 +123,9 @@ class NaiveBayesClassifier:
         P(D)を固定して、P(C|D)∝P(C)*P(D|C)
         フロー処理として対数をとり、logP(D)+log(D|C)
         P(D|C)は、そのDocumentのそれぞれの単語の出現確率P(Wn|C)の掛け算で求まる（対数だと足し算）
-        
         Args:
             *word_list(list): 入力文の単語リスト
             *category(str): 入力文に対するカテゴリ
-        
         Returns:
             #score(float): 入力カテゴリに対する確率
         """
@@ -146,44 +138,40 @@ class NaiveBayesClassifier:
     def __prior_prob(self, category):
         """
         __score関数内での確率P(C)を求める
-
         Args: 
             *category(str): カテゴリ
 
         Returns:
             *_(float): P(C)の値
         """
-        return float(self.category_count[category] / sum(self.category_count.values()))
+        prob = float(self.category_count[category] 
+                     / sum(self.category_count.values()))
+        return prob
 
     def __word_prob(self, word, category):
         """
         __score関数内での確率P(Wn|C)を求める。
         加算スムージングを利用する。
-        
         Args:
             *word(str): 入力単語
             *category(str): カテゴリ
-
         Returns:
             *prob(float): P(Wn|C)の値
         """
-        prob = (self.__in_category(word, category) + 1.0) / (sum(self.word_count[category].values())
-                                                             + len(self.vocab) * 1.0)
+        prob = (self.__in_category(word, category) + 1.0) 
+                / (sum(self.word_count[category].values()) + len(self.vocab) * 1.0)
         return prob
     
     def __in_category(self, word, category):
         """
         単語のカテゴリー内出現回数を返す。
         __word_prob関数内で利用する。
-
         Args:
             *word(str): 入力単語
             *category(str): カテゴリ
-
         Returns:
             *_(float): 単語のカテゴリー内出現回数 
         """
         if word in self.word_count[category]:
             return float(self.word_count[category][word])
         return 0.0
-

@@ -9,7 +9,6 @@ class InputForm(forms.Form):
     """
     入力フォーム
     """
-
     url = forms.URLField(
             label='URL',
             max_length=100,

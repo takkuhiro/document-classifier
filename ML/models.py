@@ -19,10 +19,8 @@ from .bert import bert_predict
 def show(url):
     """
     対象の記事の分類結果を返す関数
-
     Args:
         *url: 対象とする記事のURL
-
     Returns:
         *nb_category(str): ナイーブベイズ分類器出力結果
         *rf_category(str): RandomForest出力結果

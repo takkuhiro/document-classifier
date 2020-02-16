@@ -35,13 +35,11 @@ from ...bert import EarlyStopping, DataFrameDataset, SeriesExample, DocumentClas
 def make_df(lines, tokenizer, max_length, categories_idx):
     """
     ファイルから読み込んだデータからDataFrameを作成
-
     Args:
         *lines(list): 入力データ
         *tokenizer: 利用する単語分割ツール
         *max_length(int): BERTの最大シーケンス長
         *categories_idx(dict): カテゴリとそのインデックスを変換するための辞書
-
     Returns:
         *df: DataFrame
     """

@@ -16,11 +16,9 @@ import configparser
 def extract_tokens(text, already_tokenize=True):
     """
     形態素解析をしてトークンのリストを返す
-    
     Args:
         *text(str): 入力文
         *already_tokenize(bool): すでに単語分割されているか
-
     Returns:
         *_(list): 単語分割後の単語リスト
     """
@@ -35,11 +33,9 @@ def extract_tokens(text, already_tokenize=True):
 def random_forest_predict(text, already_tokenize=True):
     """
     RandomForestによる分類結果
-
     Args:
         *text(str): 入力文
         *already_tokenize(bool): すでに単語分割されているか
-
     Returns:
         *label_predict(str): 分類結果のカテゴリ
     """
@@ -64,8 +60,10 @@ def random_forest_predict(text, already_tokenize=True):
 
     #predict
     tmp = dictionary.doc2bow(extract_tokens(text, already_tokenize=True))
-    dense = list(matutils.corpus2dense([tmp], num_terms=len(dictionary)).T[0])
+    dense = list(matutils.corpus2dense([tmp],\
+                                       num_terms=len(dictionary)).T[0])
     idx_predict = est.predict([dense])
-    label_predict = [k for k, v in category_idx.items() if v == idx_predict[0]][0]
+    label_predict = [k for k, v in category_idx.items()\
+        if v == idx_predict[0]][0]
     return label_predict
 
