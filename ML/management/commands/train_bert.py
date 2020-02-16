@@ -104,9 +104,6 @@ class Command(BaseCommand):
             idx = np.argmax(score)
             pred.append(idx)
             true.append(categories_idx[ans])
-        assert len(pred) == len(true), 'len(pred): {},'
-                                       'len(true): {}'.format(len(pred),
-                                                              len(true))
 
         result = classification_report(true, pred)
         print(result)
