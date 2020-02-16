@@ -2,7 +2,7 @@
 
 ```
 cd document-classifier  
-docker-compose build  
+docker-compose build   
 docker-compose up -d  
 docker exec -it doc_web_1 bash  
 
