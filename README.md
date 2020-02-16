@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.com/takkuhiro/document-classifier.svg?token=pNQtko6iUq77KkHVx7Jv&branch=master)](https://travis-ci.com/takkuhiro/document-classifier)
 # 動作方法  
 
 ```
@@ -21,11 +22,11 @@ python manage.py train_bert
 
 上記コマンド後[URL](http://127.0.0.1:8000/)にアクセスする。
 
-# その他
+# モデルの評価
 ```
-# それぞれのモデルの評価
 python /code/ML/evaluate.py
 ```
+マクロ平均と重み付き平均におけるPrecision, Recall, F1で評価を行う。
 
 # 精度  
 | モデル | マクロ平均Precision | マクロ平均Recall | マクロ平均F1 | 重み付き平均Precision | 重み付き平均Recall | 重み付き平均F1 |  
