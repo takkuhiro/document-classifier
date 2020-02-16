@@ -45,7 +45,7 @@ def random_forest_predict(text, already_tokenize=True):
     dic_file = config_ini['RandomForest']['dic_file']
     train_file = config_ini['Common']['train_file']
     categories = eval(config_ini['Common']['categories'])
-    
+
     category_idx, scores = {}, {}
     for i, con in enumerate(categories):
         category_idx[con] = i
@@ -53,17 +53,16 @@ def random_forest_predict(text, already_tokenize=True):
 
     with open(train_file, 'r', encoding='utf-8') as f:
         lines = f.read().split('\n')
-    
+
     dictionary = corpora.Dictionary.load_from_text(dic_file)
     with open(config_ini['RandomForest']['model_file'], 'rb') as f:
         est = pickle.load(f)
 
-    #predict
+    # predict
     tmp = dictionary.doc2bow(extract_tokens(text, already_tokenize=True))
-    dense = list(matutils.corpus2dense([tmp],\
+    dense = list(matutils.corpus2dense([tmp],
                                        num_terms=len(dictionary)).T[0])
     idx_predict = est.predict([dense])
-    label_predict = [k for k, v in category_idx.items()\
-        if v == idx_predict[0]][0]
+    label_predict = [k for k, v in category_idx.items()
+                     if v == idx_predict[0]][0]
     return label_predict
-

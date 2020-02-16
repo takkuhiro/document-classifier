@@ -23,7 +23,7 @@ class Command(BaseCommand):
 
         nb = NaiveBayesClassifier()
         with open(train_file, 'r', encoding='utf-8') as f:
-           lines = f.read().split('\n')
+            lines = f.read().split('\n')
         for line in lines:
             nb.train(line)
         with open(model_file, 'wb') as f:

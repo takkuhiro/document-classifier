@@ -7,7 +7,8 @@ from django.db import models
 
 from janome.tokenizer import Tokenizer
 from gensim import corpora, matutils
-from sklearn.metrics import precision_recall_fscore_support, classification_report, confusion_matrix
+from sklearn.metrics import classification_report
+from sklearn.metrics import confusion_matrix
 from sklearn.ensemble import RandomForestClassifier
 from tqdm import tqdm
 import configparser
@@ -37,7 +38,7 @@ def evaluate_bayes():
 
     category_idx = {}
     for i, con in enumerate(categories):
-        category_idx[con]  = i
+        category_idx[con] = i
 
     nb = NaiveBayesClassifier()
     with open(train_file, 'r') as f:
@@ -49,8 +50,8 @@ def evaluate_bayes():
 
     with open(test_file, 'r', encoding='utf-8') as f:
         lines = f.read().split('\n')
-    
-    #Bayes評価
+
+    # Bayes評価
     all_num = len(lines)
     true, pred = [], []
     for line in tqdm(lines):
@@ -78,26 +79,29 @@ def evaluate_randomforest():
     categories = eval(config_ini['Common']['categories'])
     rf_model = config_ini['RandomForest']['model_file']
     dic_file = config_ini['RandomForest']['dic_file']
-    
+
     category_idx = {}
     for i, con in enumerate(categories):
-        category_idx[con]  = i
-    
+        category_idx[con] = i
+
     with open(rf_model, 'rb') as f:
         est = pickle.load(f)
     with open(test_file, 'r', encoding='utf-8') as f:
         lines = f.read().split('\n')
     dictionary = corpora.Dictionary.load_from_text(dic_file)
 
-    #RandomForest評価
+    # RandomForest評価
     pred, true = [], []
     for line in tqdm(lines):
         tmp = line.split('\t')
         ans, content = tmp[0], '\t'.join(tmp[1:])
-        tmp = dictionary.doc2bow(extract_tokens(content, already_tokenize=True))
-        dense = list(matutils.corpus2dense([tmp], num_terms=len(dictionary)).T[0])
+        tmp = dictionary.doc2bow(extract_tokens(content,
+                                                already_tokenize=True))
+        dense = list(matutils.corpus2dense([tmp],
+                                           num_terms=len(dictionary)).T[0])
         idx_predict = est.predict([dense])
-        category = [k for k, v in category_idx.items() if v == idx_predict[0]][0]
+        category = [k for k, v in category_idx.items()
+                    if v == idx_predict[0]][0]
         pred.append(category_idx[category])
         true.append(category_idx[ans])
 
@@ -119,11 +123,11 @@ def evaluate_bert():
     model_file_dir = config_ini['BERT']['model_file_dir']
     model = DocumentClassifier(num_labels=8)
     model.load(model_file_dir)
-    
+
     category_idx = {}
     for i, con in enumerate(categories):
-        category_idx[con]  = i
-    
+        category_idx[con] = i
+
     with open(test_file, 'r', encoding='utf-8') as f:
         lines = f.read().split('\n')
     lines = [line for line in lines if line != '']
@@ -137,14 +141,14 @@ def evaluate_bert():
         idx = np.argmax(score)
         pred.append(idx)
         true.append(category_idx[ans])
-    assert len(pred) == len(true) ,\
+    assert len(pred) == len(true) ,
         'len(pred): {}, len(true): {}'.format(len(pred), len(true))
 
     result = classification_report(true, pred)
     print(result)
     mx = confusion_matrix(true, pred)
     print(mx)
-    
+
 
 if __name__=='__main__':
     evaluate_bayes()

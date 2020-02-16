@@ -38,14 +38,14 @@ class Command(BaseCommand):
     train_file = config_ini['Common']['train_file']
     valid_file = config_ini['Common']['valid_file']
     test_file = config_ini['Common']['test_file']
-    
-    page_num = 5        #各カテゴリごとにあるページ数
+
+    page_num = 5        # 各カテゴリごとにあるページ数
     category_links = [[] for _ in range(len(categories))]
     contents = []
     idx = 0
     exec_flg = True
-    
-    #1. 収集対象のリンク先をまとめる
+
+    # 1. 収集対象のリンク先をまとめる
     link_cnt = 0
     res = requests.get(target)
     bs4obj = bs4.BeautifulSoup(res.text)
@@ -54,12 +54,12 @@ class Command(BaseCommand):
         for link in links:
             category_links[i].append(link.get('href'))
             link_cnt += 1
-    assert  len(categories) == len(category_links), \
+    assert  len(categories) == len(category_links),
         (len(categories), len(category_links))
 
     for i, cls in enumerate(categories):
         for j, category_link in enumerate(category_links[i]):
-            #各カテゴリあたりあるページ数分ループ
+            # 各カテゴリあたりあるページ数分ループ
             for k in range(1, page_num+1):
                 if k == 1:
                     target_page = category_link
@@ -68,21 +68,24 @@ class Command(BaseCommand):
                 res = requests.get(target_page)
                 bs4obj = bs4.BeautifulSoup(res.text)
                 links = bs4obj.select('.list_title a')
-                
-                #各記事からテキストを抽出
+
+                # 各記事からテキストを抽出
                 for l, link in enumerate(tqdm(links)):
                     try:
                         res_each_page = requests.get(link.get('href'))
                         bs4obj2 = bs4.BeautifulSoup(res_each_page.text)
-                        title_text = bs4obj2.select('.article_header_title')[0].getText()
+                        title_text = bs4obj2.select(
+                            '.article_header_title')[0].getText()
                         title_text = cleaning(title_text)
                         body_text = bs4obj2.select('.article')[0].getText()
                         body_text = cleaning(body_text)
                         time.sleep(1.0)
-                        
-                        contents.append('\t'.join((cls, title_text, body_text)))
+
+                        content = '\t'.join((cls, title_text, body_text))
+                        contents.append(content)
                     except:
-                        print('強制終了...(i, j, k, l)==({}, {}, {}, {})'.format(i, j, k, l))
+                        print('強制終了(i, j, k, l)==
+                               ({}, {}, {}, {})'.format(i, j, k, l))
                         exec_flg = False
                         break
                 if not exec_flg:
@@ -97,7 +100,7 @@ class Command(BaseCommand):
     with open(article_file, 'w', encoding='utf-8') as f:
         f.write('\n'.join(contents))
 
-    #2. 整形
+    # 2. 整形
     t = Tokenizer()
 
     formatted_lines = []
@@ -113,16 +116,15 @@ class Command(BaseCommand):
     with open(format_file, 'w', encoding='utf-8') as f:
         f.write('\n'.join(formatted_lines))
 
-    #3. train, valid, testにsplit
+    # 3. train, valid, testにsplit
     random.shuffle(formatted_lines)
-    train, valid, test = np.split(formatted_lines, [int(.6 * len(formatted_lines)), int(.8 * len(formatted_lines))])
-    
-    with open(train_file, 'w', encoding='utf-8') as f_train,\
-         open(valid_file, 'w', encoding='utf-8') as f_valid,\
+    train, valid, test = np.split(formatted_lines,
+                                  [int(.6 * len(formatted_lines)),
+                                  int(.8 * len(formatted_lines))])
+
+    with open(train_file, 'w', encoding='utf-8') as f_train,
+         open(valid_file, 'w', encoding='utf-8') as f_valid,
          open(test_file, 'w', encoding='utf-8') as f_test:
         f_train.write('\n'.join(train))
         f_valid.write('\n'.join(valid))
         f_test.write('\n'.join(test))
-    
-
-

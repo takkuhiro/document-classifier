@@ -44,7 +44,7 @@ class NaiveBayesClassifier:
         for con in categories:
             self.word_count[con] = {}
             self.category_count[con] = 0
-    
+
     def train(self, text):
         """
         分類器の学習
@@ -64,7 +64,7 @@ class NaiveBayesClassifier:
                 self.__word_count_up(token.surface, category)
         """
         self.__category_count_up(category)
-    
+
     def __word_count_up(self, word, category):
         """
         カテゴリごとの単語出現数を数え上げる
@@ -75,7 +75,7 @@ class NaiveBayesClassifier:
         self.word_count[category].setdefault(word, 0)
         self.word_count[category][word] += 1
         self.vocab.add(word)
-    
+
     def __category_count_up(self, category):
         """
         カテゴリ数を数え上げる
@@ -83,7 +83,7 @@ class NaiveBayesClassifier:
             *category: カテゴリラベル
         """
         self.category_count[category] += 1
-    
+
     def classifier(self, text, already_tokenize=True):
         """
         分類器による推論
@@ -95,7 +95,7 @@ class NaiveBayesClassifier:
         """
         best_category = None
         max_prob = -float('inf')
-    
+
         tokenized_tokens = []
         if already_tokenize:
             tokenized_tokens = text.split(' ')
@@ -108,7 +108,7 @@ class NaiveBayesClassifier:
                 """
                 tokenized_tokens.append(token.surface)
 
-        #P(Category|Document)が最大のカテゴリを選択
+        # P(Category|Document)が最大のカテゴリを選択
         for category in self.category_count.keys():
             prob = self.__score(tokenized_tokens, category)
             if prob > max_prob:
@@ -134,17 +134,16 @@ class NaiveBayesClassifier:
             score += math.log(self.__word_prob(word, category))
         return score
 
-    # P(C)
     def __prior_prob(self, category):
         """
         __score関数内での確率P(C)を求める
-        Args: 
+        Args:
             *category(str): カテゴリ
 
         Returns:
             *_(float): P(C)の値
         """
-        prob = float(self.category_count[category] 
+        prob = float(self.category_count[category]
                      / sum(self.category_count.values()))
         return prob
 
@@ -158,10 +157,11 @@ class NaiveBayesClassifier:
         Returns:
             *prob(float): P(Wn|C)の値
         """
-        prob = (self.__in_category(word, category) + 1.0) 
-                / (sum(self.word_count[category].values()) + len(self.vocab) * 1.0)
+        prob = (self.__in_category(word, category) + 1.0)
+                / (sum(self.word_count[category].values()) \
+                + len(self.vocab) * 1.0)
         return prob
-    
+
     def __in_category(self, word, category):
         """
         単語のカテゴリー内出現回数を返す。

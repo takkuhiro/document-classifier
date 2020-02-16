@@ -29,7 +29,8 @@ import random
 import pandas as pd
 from sklearn.metrics import classification_report, confusion_matrix
 
-from ...bert import EarlyStopping, DataFrameDataset, SeriesExample, DocumentClassifier
+from ...bert import EarlyStopping, DataFrameDataset
+from ...bert import SeriesExample, DocumentClassifier
 
 
 def make_df(lines, tokenizer, max_length, categories_idx):
@@ -68,31 +69,31 @@ class Command(BaseCommand):
         model_file_dir = config_ini['BERT']['model_file_dir']
         pretrained_model = config_ini['BERT']['pretrained_model']
         max_length = int(config_ini['BERT']['max_length'])
-        
+
         categories_idx = {}
         for i, con in enumerate(categories):
             categories_idx[con] = i
         tokenizer = BertJapaneseTokenizer.from_pretrained(pretrained_model)
-        with open(train_file, 'r') as f_train,\
-             open(valid_file, 'r') as f_valid,\
+        with open(train_file, 'r') as f_train,
+             open(valid_file, 'r') as f_valid,
              open(test_file, 'r') as f_test:
             train_lines = f_train.read().split('\n')
             valid_lines = f_valid.read().split('\n')
             test_lines = f_test.read().split('\n')
-        train_lines = [line for line in train_lines if line!='']
-        valid_lines = [line for line in valid_lines if line!='']
-        test_lines = [line for line in test_lines if line!='']
+        train_lines = [line for line in train_lines if line != '']
+        valid_lines = [line for line in valid_lines if line != '']
+        test_lines = [line for line in test_lines if line != '']
         train_df = make_df(train_lines, tokenizer, max_length, categories_idx)
         val_df = make_df(valid_lines, tokenizer, max_length, categories_idx)
 
-        model = DocumentClassifier(max_length=max_length,\
-                                   batch_size=4,\
-                                   num_labels=8,\
-                                   num_epochs=10,\
+        model = DocumentClassifier(max_length=max_length,
+                                   batch_size=4,
+                                   num_labels=8,
+                                   num_epochs=10,
                                    )
         model.fit(train_df, val_df, model_file_dir, early_stopping_rounds=3)
-        
-        #test
+
+        # test
         true, pred = [], []
         for line in test_lines:
             tmp = line.split('\t')
@@ -103,10 +104,10 @@ class Command(BaseCommand):
             idx = np.argmax(score)
             pred.append(idx)
             true.append(categories_idx[ans])
-        assert len(pred) == len(true) , 'len(pred): {}, len(true): {}'.format(len(pred), len(true))
+        assert len(pred) == len(true),
+            'len(pred): {}, len(true): {}'.format(len(pred), len(true))
 
         result = classification_report(true, pred)
         print(result)
         mx = confusion_matrix(true, pred)
         print(mx)
-        

@@ -35,13 +35,15 @@ def show(url):
     info = requests.get(url, timeout=5.0)
     if info.status_code == '404':
         return '', '', ''
- 
+
     obj = bs4.BeautifulSoup(info.text)
     extract_titles = obj.select('title')
     extract_bodys = obj.select('.gtm-click p')
     title_txt, body_txt = '', ''
-    for ele in extract_titles: title_txt += ele.getText()
-    for ele in extract_bodys: body_txt += ele.getText()
+    for ele in extract_titles:
+        title_txt += ele.getText()
+    for ele in extract_bodys:
+        body_txt += ele.getText()
     title, body = [], []
     for token in t.tokenize(title_txt):
         title.append(token.surface)

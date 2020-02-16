@@ -5,6 +5,7 @@
 """
 from django import forms
 
+
 class InputForm(forms.Form):
     """
     入力フォーム
@@ -13,6 +14,4 @@ class InputForm(forms.Form):
             label='URL',
             max_length=100,
             required=True,
-            )
-
-    
+            )    

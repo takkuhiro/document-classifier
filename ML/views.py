@@ -20,22 +20,19 @@ def index_template(request):
     else:
         form = InputForm()
         url = ''
-    
+
     if form.is_valid():
         message = 'データ検出に成功しました'
         nb_res, rf_res, be_res = show(url)
     else:
         message = 'データ検出に失敗しました'
         nb_res, rf_res, be_res = '', '', ''
-    
+
     return render(
-            request, 
-            'index.html', 
+            request,
+            'index.html',
             {'form': form,
              'naive_bayes_result': nb_res,
              'randomforest_result': rf_res,
-             'bert_result': be_res
-            }
-            )
-
-
+             'bert_result': be_res,
+            })

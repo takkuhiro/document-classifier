@@ -28,20 +28,20 @@ from tqdm import tqdm
 
 class EarlyStopping:
     """
-    Early stops the training if validation loss doesn't 
+    Early stops the training if validation loss doesn't
     improve after a given patience.
     based on: https://github.com/Bjarten/early-stopping-pytorch
     """
     def __init__(self, patience=7, verbose=False, delta=0):
         """
         Args:
-            patience (int): How long to wait after last time 
+            patience (int): How long to wait after last time
                             validation loss improved.
                             Default: 7
-            verbose (bool): If True, prints a message 
-                            for each validation loss improvement. 
+            verbose (bool): If True, prints a message
+                            for each validation loss improvement.
                             Default: False
-            delta (float):  Minimum change in the monitored quantity 
+            delta (float):  Minimum change in the monitored quantity
                             to qualify as an improvement.
                             Default: 0
         """
@@ -98,7 +98,7 @@ class DataFrameDataset(Dataset):
                  filter_pred(example) is true, or use all examples if None.
                  Default is None
         """
-        self.examples = examples.apply(SeriesExample.fromSeries, \
+        self.examples = examples.apply(SeriesExample.fromSeries,
                                        args=(fields,), axis=1).tolist()
         if filter_pred is not None:
             self.examples = filter(filter_pred, self.examples)
@@ -123,7 +123,7 @@ class SeriesExample(Example):
         for key, field in fields.items():
             if key not in data:
                 raise ValueError("Specified key {} was not found in "
-                "the input data".format(key))
+                    "the input data".format(key))
             if field is not None:
                 setattr(ex, key, field.preprocess(data[key]))
             else:
@@ -136,13 +136,13 @@ class DocumentClassifier:
     BERTをベースとした分類器
     """
 
-    def __init__(self, net_dir=None, max_length=512, batch_size=32,\
+    def __init__(self, net_dir=None, max_length=512, batch_size=32,
                  num_labels=2, num_epochs=100, random_seed=None):
         """
         Args:
             *net_dir(str): 読み込む事前学習モデルが存在するディレクトリ
             *max_length(int): BERT最大長
-            *batch_size(int): 訓練時バッチサイズ 
+            *batch_size(int): 訓練時バッチサイズ
             *num_labels(int): 分類クラス数
             *num_epochs(int): 学習時の最大エポック数
             *random_seed(int):初期パラメータを固定しておくためのseed
@@ -175,7 +175,7 @@ class DocumentClassifier:
             unk_token='[UNK]'
         )
         self.LABEL = torchtext.data.Field(sequential=False, use_vocab=False)
-    
+
     def seed_everything(self, seed):
         """
         seedの設定
@@ -220,7 +220,7 @@ class DocumentClassifier:
         """
         self.TEXT.build_vocab(ds, min_freq=min_freq)
         self.TEXT.vocab.stoi = self.tokenizer.vocab
-        
+
     def load(self, save_dir):
         """
         モデルのロード
@@ -229,7 +229,7 @@ class DocumentClassifier:
         """
         self.net.from_pretrained(save_dir, num_labels=8)
 
-    def fit(self, train_df, val_df, save_dir,\
+    def fit(self, train_df, val_df, save_dir,
             early_stopping_rounds=10, fine_tuning_type='fast'):
         """
         モデルの訓練
@@ -244,19 +244,24 @@ class DocumentClassifier:
         """
 
         logger.info('[Start]Create DataSets from DataFrames')
-        train_ds = DataFrameDataset(train_df,\
-            fields={'Text': self.TEXT, 'Label': self.LABEL})
-        val_ds = DataFrameDataset(val_df,\
-            fields={'Text': self.TEXT, 'Label': self.LABEL})
+        train_ds = DataFrameDataset(train_df,
+                                    fields={'Text': self.TEXT,
+                                            'Label': self.LABEL})
+        val_ds = DataFrameDataset(val_df,
+                                  fields={'Text': self.TEXT,
+                                          'Label': self.LABEL})
         logger.info('[Finished]Create DataSets from DataFrames')
         if not hasattr(self.TEXT, 'vocab'):
             self._build_vocab(train_ds, min_freq=1)
-        
+
         logger.info('[Start]Create DataLoaders')
-        train_dl = torchtext.data.Iterator(train_ds,\
-            batch_size=self.batch_size, train=True)
-        val_dl = torchtext.data.Iterator(val_ds,\
-             batch_size=self.batch_size, train=False, sort=False)
+        train_dl = torchtext.data.Iterator(train_ds,
+                                           batch_size=self.batch_size,
+                                           train=True)
+        val_dl = torchtext.data.Iterator(val_ds,
+                                         batch_size=self.batch_size,
+                                         train=False,
+                                         sort=False)
         logger.info('[Finished]Create DataLoaders')
 
         dataloaders_dict = {
@@ -285,8 +290,10 @@ class DocumentClassifier:
         # 最適化手法の設定
         # BERTの元の部分はファインチューニング
         optimizer = optim.Adam([
-            {'params': self.net.bert.encoder.layer[-1].parameters(), 'lr': 5e-5},
-            {'params': self.net.classifier.parameters(), 'lr': 5e-5}
+            {'params': self.net.bert.encoder.layer[-1].parameters(),
+             'lr': 5e-5},
+            {'params': self.net.classifier.parameters(),
+             'lr': 5e-5}
         ], betas=(0.9, 0.999))
 
         # 損失関数の設定
@@ -294,16 +301,16 @@ class DocumentClassifier:
 
         # 学習・検証を実行する。
         self.net = self._train_model(
-            self.net, dataloaders_dict, criterion,\
-            optimizer, num_epochs=self.num_epochs,\
+            self.net, dataloaders_dict, criterion,
+            optimizer, num_epochs=self.num_epochs,
             patience=early_stopping_rounds)
-        
+
         self.net.save_pretrained(save_dir)
 
         return self
 
     @staticmethod
-    def _train_model(net, dataloaders_dict, criterion,\
+    def _train_model(net, dataloaders_dict, criterion,
                      optimizer, num_epochs, patience):
         """
         訓練時利用する関数
@@ -317,8 +324,7 @@ class DocumentClassifier:
         Returns:
             *net: 学習後のオブジェクト
         """
-        # GPUが使えるかを確認
-        device = torch.device("cuda:0" \
+        device = torch.device("cuda:0"
             if torch.cuda.is_available() else "cpu")
         logger.info(f"使用デバイス：{device}")
         logger.info('-----start-------')
@@ -369,8 +375,7 @@ class DocumentClassifier:
 
                     # 順伝搬（forward）計算
                     with torch.set_grad_enabled(phase == 'train'):
-                        loss, logit = net(input_ids=inputs, labels=labels)                    
-                        #loss = criterion(outputs, labels)  # 損失を計算
+                        loss, logit = net(input_ids=inputs, labels=labels)                   
                         _, preds = torch.max(logit, 1)  # ラベルを予測
                         predictions.append(preds.cpu().numpy())
                         ground_truths.append(labels.data.cpu().numpy())
@@ -383,8 +388,9 @@ class DocumentClassifier:
                             if (iteration % 1 == 0):  # 10iterに1度、lossを表示
                                 t_iter_finish = time.time()
                                 duration = t_iter_finish - t_iter_start
-                                acc = (torch.sum(preds == labels.data)
-                                    ).double()/batch_size
+                                acc = (
+                                        torch.sum(preds == labels.data)
+                                      ).double()/batch_size
                                 t_iter_start = time.time()
 
                         iteration += 1
@@ -402,33 +408,29 @@ class DocumentClassifier:
                     calc_f1_average = 'macro'
                 else:
                     calc_f1_average = 'binary'
-                epoch_f1_score = f1_score(\
-                    np.concatenate(np.array(ground_truths)),\
-                    np.concatenate(np.array(predictions)),\
+                epoch_f1_score = f1_score(
+                    np.concatenate(np.array(ground_truths)),
+                    np.concatenate(np.array(predictions)),
                     average=calc_f1_average)
-                logger.info('Epoch {}/{} | {:^5} |  \
-                             Loss: {:.4f} Acc: {:.4f} \
-                             F1-Score: {:4f}'.format(epoch+1,\
-                             num_epochs,\
-                             phase, epoch_loss,\
+                logger.info('Epoch {}/{} | {:^5} |
+                             Loss: {:.4f} Acc: {:.4f}
+                             F1-Score: {:4f}'.format(epoch+1,
+                             num_epochs,
+                             phase, epoch_loss,
                               epoch_acc, epoch_f1_score))
-                #if phase == 'val':
-                #    torch.save(net.state_dict(),\
-                #    f'../data/model/bert_ckpt/bert_{epoch}.model')
                 if phase == 'val':
                     early_stopping(epoch_loss, net)
-        
+
                 if early_stopping.early_stop:
                     logger.info("Early stopping")
-                    # load the last checkpoint with the best model
                     net.load_state_dict(torch.load('checkpoint.pt'))
                     return net
-        
+
                 t_epoch_start = time.time()
-        
+
         torch.cuda.empty_cache()
         return net
-    
+
     def predict(self, test_df):
         """
         モデルによる推論
@@ -441,12 +443,11 @@ class DocumentClassifier:
         test_ds = DataFrameDataset(test_df, fields={'Text': self.TEXT})
         if not hasattr(self.TEXT, 'vocab'):
             self._build_vocab(test_ds, min_freq=1)
-        test_dl = torchtext.data.Iterator(test_ds,\
-                                          batch_size=self.batch_size,\
-                                          train=False,\
+        test_dl = torchtext.data.Iterator(test_ds,
+                                          batch_size=self.batch_size,
+                                          train=False,
                                           sort=False)
         logger.info('[Finished]Create DataSet, DataLoader from DataFrame')
-        # GPUが使えるかを確認
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         logger.info(f"使用デバイス：{device}")
         logger.info('-----start-------')
@@ -486,5 +487,3 @@ def bert_predict(text):
         if i == idx:
             return con
     return ''
-
-
