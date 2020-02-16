@@ -1,6 +1,6 @@
 # 動作方法  
 
-```docker-compose up -d```  
+```docker-compose up -d```
 ```docker exec -it doc_web_1 bash```  
 # データ収集・整形・データ分割（訓練データとテストデータ）  
 python manage.py data_collection
