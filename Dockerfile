@@ -18,4 +18,4 @@ ADD . /code/
 
 RUN apt-get update
 RUN apt-get install -y vim
-
+RUN apt-get install -y mecab libmecab-dev mecab-ipadic mecab-ipadic-utf8

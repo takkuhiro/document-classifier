@@ -1,6 +1,7 @@
 # 動作方法  
 
 ```
+cd document-classifier  
 docker-compose up -d  
 docker exec -it doc_web_1 bash  
 
