@@ -54,8 +54,6 @@ class Command(BaseCommand):
         for link in links:
             category_links[i].append(link.get('href'))
             link_cnt += 1
-    assert len(categories) == len(category_links),
-           (len(categories), len(category_links))
 
     for i, cls in enumerate(categories):
         for j, category_link in enumerate(category_links[i]):

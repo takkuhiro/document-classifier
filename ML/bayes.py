@@ -157,9 +157,9 @@ class NaiveBayesClassifier:
         Returns:
             *prob(float): P(Wn|C)の値
         """
-        prob = (self.__in_category(word, category) + 1.0)
-                / (sum(self.word_count[category].values())
-                   + len(self.vocab) * 1.0)
+        cn = self.__in_category(word, category) + 1.0
+        wc_sum = sum(self.word_count[category].values())
+        prob = cn / (wc_sum + len(self.vocab) * 1.0)
         return prob
 
     def __in_category(self, word, category):
