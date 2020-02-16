@@ -19,7 +19,7 @@ python manage.py train_randomforest
 python manage.py train_bert  
 ```
 
-[URL](http://127.0.0.1:8000/)にアクセスする。
+上記コマンド後[URL](http://127.0.0.1:8000/)にアクセスする。
 
 # その他
 ```
