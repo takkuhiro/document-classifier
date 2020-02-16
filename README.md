@@ -1,6 +1,7 @@
 # 動作方法  
-```docker-compose up -d  
-docker exec -it doc_web_1 bash  
+
+```docker-compose up -d```  
+```docker exec -it doc_web_1 bash```  
 # データ収集・整形・データ分割（訓練データとテストデータ）  
 python manage.py data_collection
 # モデル訓練：ナイーブベイズ分類器
@@ -8,7 +9,7 @@ python manage.py train_bayes
 # モデル訓練：Random Forest
 python manage.py train_randomforest
 # モデル訓練：BERT
-python manage.py train_bert  ```
+python manage.py train_bert  
 
 [URL](http://127.0.0.1:8000/)にアクセスする。
 
