@@ -59,7 +59,7 @@ class Command(BaseCommand):
             dense = list(matutils.corpus2dense([tmp],
                                                num_terms=len(dictionary)).T[0])
             train_text.append(dense)
-        assert len(ans)==len(train_text), (len(ans), len(train_text))
+        assert len(ans) == len(train_text), (len(ans), len(train_text))
 
         estimator = RandomForestClassifier()
         estimator.fit(train_text, ans)

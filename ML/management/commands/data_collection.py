@@ -54,8 +54,8 @@ class Command(BaseCommand):
         for link in links:
             category_links[i].append(link.get('href'))
             link_cnt += 1
-    assert  len(categories) == len(category_links),
-        (len(categories), len(category_links))
+    assert len(categories) == len(category_links),
+           (len(categories), len(category_links))
 
     for i, cls in enumerate(categories):
         for j, category_link in enumerate(category_links[i]):
@@ -83,9 +83,9 @@ class Command(BaseCommand):
 
                         content = '\t'.join((cls, title_text, body_text))
                         contents.append(content)
-                    except:
-                        print('強制終了(i, j, k, l)==
-                               ({}, {}, {}, {})'.format(i, j, k, l))
+                    except HTTPError:
+                        print('強制終了(i, j, k, l) == '
+                              '({}, {}, {}, {})'.format(i, j, k, l))
                         exec_flg = False
                         break
                 if not exec_flg:
@@ -120,11 +120,11 @@ class Command(BaseCommand):
     random.shuffle(formatted_lines)
     train, valid, test = np.split(formatted_lines,
                                   [int(.6 * len(formatted_lines)),
-                                  int(.8 * len(formatted_lines))])
+                                   int(.8 * len(formatted_lines))])
 
-    with open(train_file, 'w', encoding='utf-8') as f_train,
-         open(valid_file, 'w', encoding='utf-8') as f_valid,
-         open(test_file, 'w', encoding='utf-8') as f_test:
+    with open(train_file, 'w', encoding='utf-8') as f_train:
         f_train.write('\n'.join(train))
+    with open(valid_file, 'w', encoding='utf-8') as f_valid:
         f_valid.write('\n'.join(valid))
+    with open(test_file, 'w', encoding='utf-8') as f_test:
         f_test.write('\n'.join(test))

@@ -74,11 +74,11 @@ class Command(BaseCommand):
         for i, con in enumerate(categories):
             categories_idx[con] = i
         tokenizer = BertJapaneseTokenizer.from_pretrained(pretrained_model)
-        with open(train_file, 'r') as f_train,
-             open(valid_file, 'r') as f_valid,
-             open(test_file, 'r') as f_test:
+        with open(train_file, 'r') as f_train:
             train_lines = f_train.read().split('\n')
+        with open(valid_file, 'r') as f_valid:
             valid_lines = f_valid.read().split('\n')
+        with open(test_file, 'r') as f_test:
             test_lines = f_test.read().split('\n')
         train_lines = [line for line in train_lines if line != '']
         valid_lines = [line for line in valid_lines if line != '']

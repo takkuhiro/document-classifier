@@ -141,8 +141,9 @@ def evaluate_bert():
         idx = np.argmax(score)
         pred.append(idx)
         true.append(category_idx[ans])
-    assert len(pred) == len(true) ,
-        'len(pred): {}, len(true): {}'.format(len(pred), len(true))
+    assert len(pred) == len(true),
+           'len(pred): {}, len(true): {}'.format(len(pred),
+                                                 len(true))
 
     result = classification_report(true, pred)
     print(result)
@@ -150,7 +151,7 @@ def evaluate_bert():
     print(mx)
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
     evaluate_bayes()
     evaluate_randomforest()
     evaluate_bert()

@@ -158,8 +158,8 @@ class NaiveBayesClassifier:
             *prob(float): P(Wn|C)の値
         """
         prob = (self.__in_category(word, category) + 1.0)
-                / (sum(self.word_count[category].values()) \
-                + len(self.vocab) * 1.0)
+                / (sum(self.word_count[category].values())
+                   + len(self.vocab) * 1.0)
         return prob
 
     def __in_category(self, word, category):
@@ -170,7 +170,7 @@ class NaiveBayesClassifier:
             *word(str): 入力単語
             *category(str): カテゴリ
         Returns:
-            *_(float): 単語のカテゴリー内出現回数 
+            *_(float): 単語のカテゴリー内出現回数
         """
         if word in self.word_count[category]:
             return float(self.word_count[category][word])

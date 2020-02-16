@@ -123,7 +123,7 @@ class SeriesExample(Example):
         for key, field in fields.items():
             if key not in data:
                 raise ValueError("Specified key {} was not found in "
-                    "the input data".format(key))
+                                 "the input data".format(key))
             if field is not None:
                 setattr(ex, key, field.preprocess(data[key]))
             else:
@@ -325,7 +325,8 @@ class DocumentClassifier:
             *net: 学習後のオブジェクト
         """
         device = torch.device("cuda:0"
-            if torch.cuda.is_available() else "cpu")
+                              if torch.cuda.is_available()
+                              else "cpu")
         logger.info(f"使用デバイス：{device}")
         logger.info('-----start-------')
 
@@ -375,7 +376,7 @@ class DocumentClassifier:
 
                     # 順伝搬（forward）計算
                     with torch.set_grad_enabled(phase == 'train'):
-                        loss, logit = net(input_ids=inputs, labels=labels)                   
+                        loss, logit = net(input_ids=inputs, labels=labels)
                         _, preds = torch.max(logit, 1)  # ラベルを予測
                         predictions.append(preds.cpu().numpy())
                         ground_truths.append(labels.data.cpu().numpy())
@@ -412,12 +413,14 @@ class DocumentClassifier:
                     np.concatenate(np.array(ground_truths)),
                     np.concatenate(np.array(predictions)),
                     average=calc_f1_average)
-                logger.info('Epoch {}/{} | {:^5} |
-                             Loss: {:.4f} Acc: {:.4f}
-                             F1-Score: {:4f}'.format(epoch+1,
-                             num_epochs,
-                             phase, epoch_loss,
-                              epoch_acc, epoch_f1_score))
+                logger.info('Epoch {}/{} | {:^5} |'
+                            'Loss: {:.4f} Acc: {:.4f}'
+                            'F1-Score: {:4f}'.format(epoch+1,
+                                                     num_epochs,
+                                                     phase,
+                                                     epoch_loss,
+                                                     epoch_acc,
+                                                     epoch_f1_score))
                 if phase == 'val':
                     early_stopping(epoch_loss, net)
 
@@ -463,6 +466,7 @@ class DocumentClassifier:
         logger.info('-----finished-------')
         return np.concatenate(logits, axis=0)
 
+
 def bert_predict(text):
     """
     BERTベースの分類器による推論。Webアプリ用の関数
@@ -478,7 +482,6 @@ def bert_predict(text):
     categories = eval(config_ini['Common']['categories'])
     model = DocumentClassifier(net_dir=model_file_dir, num_labels=8)
     model.load(model_file_dir)
-    #net.load_state_dict(torch.load('checkpoint.pt'))
 
     df = pd.DataFrame({'Text': [text]})
     vec = model.predict(df)

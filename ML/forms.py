@@ -14,4 +14,4 @@ class InputForm(forms.Form):
             label='URL',
             max_length=100,
             required=True,
-            )    
+            )
