@@ -5,7 +5,7 @@
 cd document-classifier  
 docker-compose build   
 docker-compose up -d  
-docker exec -it doc_web_1 bash  
+docker exec -it document-classifier_web_1 bash  
 
 # データ収集・整形・データ分割  
 python manage.py data_collection  

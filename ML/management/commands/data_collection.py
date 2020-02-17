@@ -15,6 +15,7 @@ import random
 import numpy as np
 from tqdm import tqdm
 from janome.tokenizer import Tokenizer
+from urllib.error import HTTPError
 
 
 def cleaning(text):
