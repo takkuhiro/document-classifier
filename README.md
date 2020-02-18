@@ -43,6 +43,7 @@ python /code/ML/evaluate.py
 - ナイーブベイズとRandom Forestは、名詞のみの場合と全単語の場合を試して比較した。(BERTは文脈を考慮しているので名詞のみでの実行はしていない。)
 - BERTは、訓練時に検証データを用いてLossが一定以上低下しなくなった状態が3epoch続いた場合は訓練を中止した。（EarlyStopping）これにより、最終的に7epoch時のパラメタを利用した。
 
+
 # 補足
 - BERT設定はmax_lengthが128、訓練時バッチサイズが4、それ以外はDevlinらのBERT-BASEに従う。
 - BERT記事参照: https://github.com/nekoumei/DocumentClassificationUsingBERT-Japanese  
