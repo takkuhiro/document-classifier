@@ -1,7 +1,0 @@
-language: python3
-cache: pip
-sudo: false
-install:
-  - pip install pycodestyle
-script:
-  - pycodestyle .
