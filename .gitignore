@@ -4,5 +4,5 @@ ML/__pycache__/
 ML/__init__.py
 ML/management/__pycache__/
 ML/management/__init__.py
-ML/management/__pycache__/
-ML/management/__init__.py
+ML/management/commands/__pycache__/
+ML/management/commands/__init__.py
