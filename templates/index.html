@@ -1,0 +1,77 @@
+<html> 
+{% load static %}
+<head>
+    <title>記事分類</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}" />
+    <style type="text/css">
+        body{
+                margin: 10px;
+        }
+        div.field {
+          width: 100%;
+        }
+        div.field > input, div.field > textarea, div.field > select, div.field > button {
+          width: 100%;
+          padding: 6px 12px;
+          box-sizing: border-box;
+          border-radius: 4px;
+          border: solid 1px #999;
+        }
+    </style>
+</head>
+<body>
+    <h2>記事分類サービス</h2>
+    <div class="form-group">
+        <div class="content container">
+            <form method='POST' action=''>
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="field">
+                        {{ field.label_tag }}
+                        {{ field }}
+                    </div>
+                {% endfor %}
+                <div class="field" style="margin-top:3pt">
+                    <button type="submit">送信</button>
+                </div>
+            </form>
+        </div>
+    </div>
+     
+    <div class='card'>
+    <div class='card-header'>分類器一覧</div>
+    <div class='card-body'>
+    <div class='container-fluid'>
+    <div class='row'>
+        <div class='col-md-4'>
+            <div class="card bg-secondary text-white">
+            <div class="card-header">ナイーブベイズ</div>
+            <div class="card-body">
+                <p>結果：<strong style='font-size:30px;'>{{naive_bayes_result}}</strong></p>
+            </div>
+            </div>
+        </div>
+
+        <div class='col-md-4'>
+            <div class="card bg-secondary text-white">
+                <div class="card-header">Random Forest</div>
+                <div class="card-body">
+                    <p>結果：<strong style='font-size:30px;'>{{randomforest_result}}</strong></p>
+                </div>
+            </div>
+        </div>
+
+        <div class='col-md-4'>
+            <div class="card bg-secondary text-white">
+                <div class="card-header">BERT</div>
+                <div class="card-body">
+                    <p>結果：<strong style='font-size:30px;'>{{bert_result}}</strong></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+    </div>
+</body>
+</html>
