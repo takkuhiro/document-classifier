@@ -33,7 +33,7 @@ from ...bert import EarlyStopping, DataFrameDataset
 from ...bert import SeriesExample, DocumentClassifier
 
 
-def make_df(lines, tokenizer, max_length, categories_idx):
+def make_df(lines, tokenizer, max_length, categories_idx, predict=False):
     """
     ファイルから読み込んだデータからDataFrameを作成
     Args:
@@ -41,8 +41,10 @@ def make_df(lines, tokenizer, max_length, categories_idx):
         *tokenizer: 利用する単語分割ツール
         *max_length(int): BERTの最大シーケンス長
         *categories_idx(dict): カテゴリとそのインデックスを変換するための辞書
+        *predict: 推論時はdfとその答えを別々に返す
     Returns:
         *df: DataFrame
+        *anss: 推論時に返す答えのラベル
     """
     anss, contents = [], []
     for line in lines:
@@ -56,8 +58,12 @@ def make_df(lines, tokenizer, max_length, categories_idx):
             content = line
         anss.append(categories_idx[ans])
         contents.append(content)
-    df = pd.DataFrame({'Text': contents, 'Label': anss})
-    return df
+    if predict:
+        df = pd.DataFrame({'Text': contents})
+        return df, anss
+    else:
+        df = pd.DataFrame({'Text': contents, 'Label': anss})
+        return df
 
 
 class Command(BaseCommand):
@@ -99,18 +105,11 @@ class Command(BaseCommand):
         model.fit(train_df, val_df, model_file_dir, early_stopping_rounds=3)
 
         # test
-        true, pred = [], []
-        for line in test_lines:
-            tmp = line.split('\t')
-            ans, content = tmp[0].rstrip(), '\t'.join(tmp[1:])
-            content = content.replace(' ', '')
-            df = pd.DataFrame({'Text': [content]})
-            score = model.predict(df)
-            idx = np.argmax(score)
-            pred.append(idx)
-            true.append(categories_idx[ans])
+        test_df, true = make_df(test_lines, tokenizer, max_length, categories_idx, predict=True)
+        scores = model.predict(test_df)
+        preds = np.argmax(scores, axis=1)
 
-        result = classification_report(true, pred)
+        result = classification_report(true, preds)
         print(result)
-        mx = confusion_matrix(true, pred)
+        mx = confusion_matrix(true, preds)
         print(mx)
