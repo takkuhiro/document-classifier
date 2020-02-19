@@ -21,6 +21,7 @@ from urllib.error import HTTPError
 def cleaning(text):
     cleaned_text = text
     cleaned_text = cleaned_text.replace('\u3000', ' ')
+    cleaned_text = cleaned_text.replace('\r\n', '')
     cleaned_text = cleaned_text.replace('\n', '')
     cleaned_text = cleaned_text.replace('\'', '')
 
