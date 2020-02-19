@@ -47,8 +47,13 @@ def make_df(lines, tokenizer, max_length, categories_idx):
     anss, contents = [], []
     for line in lines:
         tmp = line.split('\t')
-        ans, content = tmp[0].rstrip(), ' [SEP] '.join(tmp[1:]).rstrip()
-        content = content.replace(' ', '')
+        try:
+            ans = tmp[0].replace('\r', '').rstrip()
+            content = ' [SEP] '.join(tmp[1:]).rstrip()
+            content = content.replace(' ', '')
+        except IndexError:
+            ans = line
+            content = line
         anss.append(categories_idx[ans])
         contents.append(content)
     df = pd.DataFrame({'Text': contents, 'Label': anss})

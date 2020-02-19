@@ -351,7 +351,6 @@ class DocumentClassifier:
                     net.train()  # モデルを訓練モードに
                 else:
                     net.eval()   # モデルを検証モードに
-                logger.info('pass')
 
                 epoch_loss = 0.0  # epochの損失和
                 epoch_corrects = 0  # epochの正解数
