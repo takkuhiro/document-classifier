@@ -15,7 +15,7 @@ import random
 import numpy as np
 from tqdm import tqdm
 from janome.tokenizer import Tokenizer
-from urllib.error import HTTPError
+from urllib.error import HTTPError, URLError
 
 
 def cleaning(text):
@@ -51,8 +51,16 @@ class Command(BaseCommand):
 
         # 1. 収集対象のリンク先をまとめる
         link_cnt = 0
-        res = requests.get(target)
-        bs4obj = bs4.BeautifulSoup(res.text)
+        try:
+            res = requests.get(target)
+        except HTTPError as e:
+            print(e)
+            sys.exit()
+        except URLError as e:
+            print(e)
+            sys.exit()
+
+        bs4obj = bs4.BeautifulSoup(res.text, 'html.parser')
         for i in range(len(categories)):
             links = bs4obj.select('.nav_sub_list_'+str(i+1)+' a')
             for link in links:
@@ -67,15 +75,27 @@ class Command(BaseCommand):
                         target_page = category_link
                     else:
                         target_page = category_link + '?page=' + str(k)
-                    res = requests.get(target_page)
-                    bs4obj = bs4.BeautifulSoup(res.text)
+                    try:
+                        res = requests.get(target_page)
+                    except HTTPError as e:
+                        print('{}: 強制終了(i, j, k, l) == '
+                              '({}, {}, {}, {})'.format(e, i, j, k, l))
+                        exec_flg = False
+                        break
+                    except URLError as e:
+                        print('{}: 強制終了(i, j, k, l) == '
+                              '({}, {}, {}, {})'.format(e, i, j, k, l))
+                        exec_flg = False
+                        break
+                    bs4obj = bs4.BeautifulSoup(res.text, 'html.parser')
                     links = bs4obj.select('.list_title a')
 
                     # 各記事からテキストを抽出
                     for l, link in enumerate(tqdm(links)):
                         try:
                             res_each_page = requests.get(link.get('href'))
-                            bs4obj2 = bs4.BeautifulSoup(res_each_page.text)
+                            bs4obj2 = bs4.BeautifulSoup(res_each_page.text,
+                                                        'html.parser')
                             title_text = bs4obj2.select(
                                 '.article_header_title')[0].getText()
                             title_text = cleaning(title_text)
@@ -85,14 +105,20 @@ class Command(BaseCommand):
 
                             content = '\t'.join((cls, title_text, body_text))
                             contents.append(content)
-                        except HTTPError:
-                            print('強制終了(i, j, k, l) == '
-                                  '({}, {}, {}, {})'.format(i, j, k, l))
+                        except HTTPError as e:
+                            print('{}: 強制終了(i, j, k, l) == '
+                                  '({}, {}, {}, {})'.format(e, i, j, k, l))
                             exec_flg = False
                             break
+                        except URLError as e:
+                            print('{}: 強制終了(i, j, k, l) == '
+                                  '({}, {}, {}, {})'.format(e, i, j, k, l))
+                            exec_flg = False
+                            break
+
                     if not exec_flg:
                         break
-                    time.sleep(20.0)
+                    time.sleep(3.0)
                 if not exec_flg:
                     break
             if not exec_flg:
