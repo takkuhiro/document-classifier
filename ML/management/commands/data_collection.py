@@ -59,6 +59,7 @@ class Command(BaseCommand):
         except URLError as e:
             print(e)
             sys.exit()
+        assert res.status_code == 200, res.status_code
 
         bs4obj = bs4.BeautifulSoup(res.text, 'html.parser')
         for i in range(len(categories)):
@@ -87,6 +88,9 @@ class Command(BaseCommand):
                               '({}, {}, {}, {})'.format(e, i, j, k, l))
                         exec_flg = False
                         break
+                    if res.status_code == 404:
+                        print('404 Error: {}'.format(target_page))
+                        continue
                     bs4obj = bs4.BeautifulSoup(res.text, 'html.parser')
                     links = bs4obj.select('.list_title a')
 
@@ -94,6 +98,9 @@ class Command(BaseCommand):
                     for l, link in enumerate(tqdm(links)):
                         try:
                             res_each_page = requests.get(link.get('href'))
+                            if res_each_page.status_code == 404:
+                                print('404 Error')
+                                continue
                             bs4obj2 = bs4.BeautifulSoup(res_each_page.text,
                                                         'html.parser')
                             title_text = bs4obj2.select(
