@@ -8,7 +8,7 @@ numpy==1.18.1
 gensim==3.8.1
 pycodestyle==2.5.0
 pep8==1.7.1
-torch==1.4.0
+torch==2.6.0
 mojimoji==0.0.9.post0
 pandas==1.0.1
 logzero==1.5.0
