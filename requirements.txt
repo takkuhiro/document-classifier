@@ -1,4 +1,4 @@
-django==1.11
+django==4.2.22
 requests==2.22.0
 beautifulsoup4==4.8.2
 tqdm==4.42.1
