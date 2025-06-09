@@ -1,5 +1,5 @@
 django==1.11
-requests==2.22.0
+requests==2.32.4
 beautifulsoup4==4.8.2
 tqdm==4.42.1
 janome==0.3.10
